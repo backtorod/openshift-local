@@ -24,7 +24,7 @@ init:
 	curl -L https://github.com/openshift/origin/releases/download/v3.6.0/openshift-origin-client-tools-v3.6.0-c4dd4cf-linux-64bit.tar.gz | tar xvfz - --strip-components=1 -C $(OC_CLUSTER_BIN)
 
 cluster-status:
-	$(OC_CLUSTER_BIN)/oc status
+	$(OC_CLUSTER_BIN)/oc cluster status
 
 cluster-up:
 	$(OC_CLUSTER_BIN)/oc cluster up \
@@ -44,3 +44,15 @@ cluster-permissions:
 	$(OC_CLUSTER_BIN)/oc login -u system:admin
 	$(OC_CLUSTER_BIN)/oc adm policy add-cluster-role-to-group system:openshift:templateservicebroker-client system:unauthenticated system:authenticated
 	$(OC_CLUSTER_BIN)/oc adm policy add-cluster-role-to-user cluster-admin admin
+
+cluster-restart:
+	$(OC_CLUSTER_BIN)/oc cluster up \
+	--host-config-dir=$(OC_CONFIG_DIR) \
+	--host-data-dir=$(OC_DATA_DIR) \
+	--host-pv-dir=$(OC_PV_DIR) \
+	--host-volumes-dir=$(OC_VOLUMES_DIR) \
+	--use-existing-config=$(OC_USE_EXISTING_CONFIG) \
+	--version=$(OC_VERSION)
+
+cluster-down:
+	$(OC_CLUSTER_BIN)/oc down
