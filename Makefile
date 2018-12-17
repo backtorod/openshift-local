@@ -1,4 +1,7 @@
-OC_CLUSTER_HOME="${HOME}/.openshift"
+
+
+OC_CLUSTER_HOME=$(HOME)/.openshift
+OC_CLUSTER_BIN=$(OC_CLUSTER_HOME)/bin
 
 OC_CONFIG_DIR="$(OC_CLUSTER_HOME)/_cluster_config"
 OC_DATA_DIR="$(OC_CLUSTER_HOME)/_cluster_data"
@@ -12,8 +15,19 @@ OC_USE_EXISTING_CONFIG=true
 OC_VERSION=v3.6.0
 OC_VOLUMES_DIR="$(OC_CLUSTER_HOME)/_cluster_volumes"
 
+reset:
+	rm -Rf $(OC_CLUSTER_HOME)
+	rm -Rf $(OC_CLUSTER_BIN)
+
+init:
+	mkdir -p $(OC_CLUSTER_BIN)
+	curl -L https://github.com/openshift/origin/releases/download/v3.6.0/openshift-origin-client-tools-v3.6.0-c4dd4cf-linux-64bit.tar.gz | tar xvfz - --strip-components=1 -C $(OC_CLUSTER_BIN)
+
+cluster-status:
+	$(OC_CLUSTER_BIN)/oc status
+
 cluster-up:
-	oc cluster up \
+	$(OC_CLUSTER_BIN)/oc cluster up \
 	--host-config-dir=$(OC_CONFIG_DIR) \
 	--host-data-dir=$(OC_DATA_DIR) \
 	--host-pv-dir=$(OC_PV_DIR) \
@@ -27,6 +41,6 @@ cluster-up:
 	--version=$(OC_VERSION)
 
 cluster-permissions:
-	oc login -u system:admin
-	oc adm policy add-cluster-role-to-group system:openshift:templateservicebroker-client system:unauthenticated system:authenticated && \
-	oc adm policy add-cluster-role-to-user cluster-admin admin
+	$(OC_CLUSTER_BIN)/oc login -u system:admin
+	$(OC_CLUSTER_BIN)/oc adm policy add-cluster-role-to-group system:openshift:templateservicebroker-client system:unauthenticated system:authenticated
+	$(OC_CLUSTER_BIN)/oc adm policy add-cluster-role-to-user cluster-admin admin
