@@ -1,5 +1,3 @@
-
-
 OC_CLUSTER_HOME=$(HOME)/.openshift
 OC_CLUSTER_BIN=$(OC_CLUSTER_HOME)/bin
 
